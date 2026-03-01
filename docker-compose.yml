@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  backend:
+    build: ./backend
+    container_name: JobJob-backend
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./backend/data:/app/data
+    environment:
+      - DB_PATH=/app/data/data.db
+      - MODEL_PATH=/app/data/model.json
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: JobJob-frontend
+    ports:
+      - '5173:80'
+    depends_on:
+      - backend
+    restart: always
