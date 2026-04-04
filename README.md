@@ -1,19 +1,70 @@
-# fobJob_full_prod — Production-ready (FastAPI + React built + Nginx + Scheduler)
+# Project Setup Guide
 
-## Run everything with Docker Compose
+## Option 1: Run with Docker (Recommended)
+
+Run the entire application stack (frontend, backend, scheduler, and database) using Docker Compose:
+
 ```bash
 docker compose up --build
 ```
-- Frontend (served by nginx): http://localhost:5173
-- Backend API: http://localhost:8000
-  - GET /health
-  - GET /cars
-  - POST /cars/refresh (also called by scheduler every 6 hours)
 
-## Data persistence
-SQLite DB stored in `./backend/data/data.db` on host (volume mount).
+### Services
 
-## Notes
-- The scheduler container uses a simple loop to POST to `/cars/refresh` every 21600 seconds (6 hours).
-- If you prefer cron-based scheduling, we can replace scheduler with a tiny Alpine image + crond.
-- Nginx serves the frontend build on port 5173. If you want it on port 80, change ports mapping in docker-compose.
+* Frontend (served via Nginx): http://localhost:5173
+* Backend API: http://localhost:8000
+
+  * `GET /health`
+  * `GET /cars`
+  * `POST /cars/refresh` (also triggered automatically every 6 hours)
+
+### Data Persistence
+
+* SQLite database is stored at:
+  `./backend/data/data.db` (mounted as a volume on the host)
+
+### Notes
+
+* A scheduler container sends a request to `/cars/refresh` every 21600 seconds (6 hours)
+* You can switch to cron-based scheduling if preferred
+* To change frontend port (e.g., to port 80), modify the `ports` section in `docker-compose.yml`
+
+---
+
+## Option 2: Run Without Docker (Manual Setup)
+
+You can also run the application manually without Docker.
+
+### Backend Setup
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+Backend will be available at:
+http://localhost:8000
+
+---
+
+### Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend will be available at:
+http://localhost:5173
+
+---
+
+## Notes for Manual Setup
+
+* Ensure Python and Node.js are installed on your system
+* The frontend is configured to connect to the backend at `http://localhost:8000`
+* The scheduler will **not run automatically** in this mode (you must trigger `/cars/refresh` manually or implement your own scheduler)
+
+---
+

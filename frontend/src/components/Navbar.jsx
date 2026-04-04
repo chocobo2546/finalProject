@@ -2,7 +2,8 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useScrape } from '../ScrapeContext.jsx'
 
-export default function Navbar() {
+// รับ Props theme และ toggleTheme มาจาก App.jsx
+export default function Navbar({ theme, toggleTheme }) {
   const { status, count, stopScraping } = useScrape()
 
   return (
@@ -51,6 +52,27 @@ export default function Navbar() {
       <NavLink to="/about" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
         <i className="fas fa-info-circle" /> About
       </NavLink>
+
+      {/* ปุ่มสลับ Theme (Dark/Light) */}
+      <button 
+        onClick={toggleTheme} 
+        className="nav-item theme-toggle-btn"
+        title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        style={{ 
+          padding: '8px 12px', 
+          marginLeft: '5px', 
+          cursor: 'pointer',
+          background: 'transparent',
+          border: '1px solid var(--border)'
+        }}
+      >
+        {theme === 'dark' ? (
+          <><i className="fas fa-sun" style={{ color: '#ffb300', opacity: 1 }}></i></>
+        ) : (
+          <><i className="fas fa-moon" style={{ color: '#555', opacity: 1 }}></i></>
+        )}
+      </button>
+
     </nav>
   )
 }

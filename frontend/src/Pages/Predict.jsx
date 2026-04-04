@@ -25,6 +25,9 @@ export default function Predict() {
   const [busy, setBusy] = useState(false)
   const [predResult, setPredResult] = useState(null)
   const [error, setError] = useState('')
+  
+  // State สำหรับเก็บค่า R^2
+  const [r2Score, setR2Score] = useState(null)
 
   // Map button states -> reg value used by backend
   const reg = useMemo(() => {
@@ -78,12 +81,14 @@ export default function Predict() {
     setBusy(true)
     setError('')
     setPredResult(null)
+    setR2Score(null)
 
     try {
       const lam = 10
       const a = await tuneAlphaIfNeeded(lam)
 
-      await apiPost('/model/train', {
+      // รับค่า Model ที่เพิ่ง Train เสร็จ (เพื่อดึงค่า r2)
+      const trainRes = await apiPost('/model/train', {
         reg,
         alpha: a,
         lambda: lam,
@@ -93,6 +98,10 @@ export default function Predict() {
         center_y: true,
         brand
       })
+      
+      if (trainRes && trainRes.r2 !== undefined) {
+        setR2Score(trainRes.r2)
+      }
 
       const res = await apiPost('/model/predict', {
         items: [{ year, gear, mile }]
@@ -244,12 +253,22 @@ export default function Predict() {
 
           {/* Top-right HUD */}
           <div className={`result-hud ${predResult ? 'active' : ''}`}>
-            <span className="price-label">ESTIMATED PRICE (ราคาประเมิน)</span>
+            {/* <span className="price-label">ESTIMATED PRICE (ราคาประเมิน)</span> */}
             <div className="price-value">
-              <span className="price-currency">฿</span>
               <span>{predPriceText}</span>
+              <span className="price-currency">฿</span>
             </div>
-            <p className="hud-note">*Based on trained model output</p>
+            {/* <p className="hud-note">*Based on trained model output</p> */}
+          </div>
+          
+          {/* Bottom-right HUD สำหรับแสดงค่า R^2 */}
+          <div className={`metrics-hud ${predResult ? 'active' : ''}`}>
+            <div className="metric-box">
+              <span className="metric-label">R²</span>
+              <span className="metric-value">
+                {r2Score !== null ? (r2Score * 100).toFixed(2) + '%' : '--'}
+              </span>
+            </div>
           </div>
 
           {/* Loader overlay inside result area (car.zip style) */}

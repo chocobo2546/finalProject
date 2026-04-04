@@ -154,6 +154,13 @@ class TrainService:
                 if stall >= cfg.early_stop_patience:
                     break
 
+        # -------- คำนวณ R^2 --------
+        yhat_final = Xb @ beta
+        ss_res = float(np.sum((yc - yhat_final) ** 2))
+        ss_tot = float(np.sum(yc ** 2))
+        r2 = 1.0 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
+        # ----------------------------------------
+
         return {
             "beta": beta.tolist(),
             "mu": mu.tolist(),
@@ -164,5 +171,6 @@ class TrainService:
             "elastic_alpha": cfg.elastic_alpha,
             "epochs_trained": ep + 1,
             "final_loss": float(best),
+            "r2": r2,  
             "feature_order": self.feature_order,
         }
