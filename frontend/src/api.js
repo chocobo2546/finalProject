@@ -1,4 +1,4 @@
-const DEFAULT_BASE = 'http://localhost:8000'
+const DEFAULT_BASE = 'https://carpridict.onrender.com'
 
 export function getBackendBase() {
   return (import.meta.env.VITE_BACKEND_URL || DEFAULT_BASE).replace(/\/$/, '')
