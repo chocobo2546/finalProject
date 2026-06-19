@@ -9,7 +9,7 @@ class ModelService:
     """Persist the latest trained model to disk (JSON) and keep it in memory."""
 
     def __init__(self, model_path: Optional[str] = None) -> None:
-        self.model_path = model_path or os.environ.get("MODEL_PATH", "/app/data/model.json")
+        self.model_path = model_path or os.environ.get("MODEL_PATH", "./data/model.json")
         self._model: Optional[Dict[str, Any]] = None
         self.load()
 

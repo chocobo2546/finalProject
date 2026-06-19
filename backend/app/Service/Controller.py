@@ -70,7 +70,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    db_path = os.environ.get("DB_PATH", "/app/data/data.db")
+    db_path = os.environ.get("DB_PATH", "./data/data.db")
     db = Database(db_path=db_path)
 
     scrapping_service = ScrappingService()

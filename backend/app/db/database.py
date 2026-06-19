@@ -6,8 +6,11 @@ from datetime import datetime
 
 def ensure_dir(path: str):
     d = os.path.dirname(path)
-    if d and not os.path.exists(d):
-        os.makedirs(d, exist_ok=True)
+
+    if not d:
+        return
+
+    os.makedirs(d, exist_ok=True)
 
 class Database:
     def __init__(self, db_path="app/data/data.db"):

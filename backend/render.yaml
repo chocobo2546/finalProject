@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: car-price-api
+    env: python
+
+    rootDir: backend
+
+    buildCommand: pip install -r requirements.txt
+
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
+    healthCheckPath: /health
+
+    envVars:
+      - key: CORS_ORIGINS
+        value: https://final-project-iota-blush.vercel.app
+
+      - key: DB_PATH
+        value: ./data/data.db
+
+      - key: MODEL_PATH
+        value: ./data/model.json
